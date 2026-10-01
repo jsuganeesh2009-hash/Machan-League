@@ -1,0 +1,6 @@
+{
+  "name": "MACHAN LEAGUE",
+  "description": "Fast-paced cross-platform 3 vs 3 tactical top-down shooter game featuring Team A vs Team B arena battles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

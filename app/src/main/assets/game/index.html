@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>MACHAN LEAGUE - 3 vs 3 Arena Shooter</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="gameContainer">
+    <!-- Game World Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Top Match HUD Header -->
+    <header id="topHud">
+      <!-- Team A Roster (Blue / Cyan) -->
+      <div class="team-roster team-a">
+        <div class="team-badge">
+          <span class="team-tag">TEAM A</span>
+          <span class="team-score" id="scoreA">0</span>
+        </div>
+        <div class="roster-list" id="rosterA">
+          <!-- Populated dynamically: Suganeesh, Karthikeyan, Jaswanth -->
+        </div>
+      </div>
+
+      <!-- Match Info & Timer -->
+      <div id="matchCenter">
+        <div class="match-title">MACHAN LEAGUE</div>
+        <div class="match-timer" id="matchTimer">02:30</div>
+        <div class="status-banner" id="statusBanner">ROUND 1 - FIGHT!</div>
+      </div>
+
+      <!-- Team B Roster (Orange / Red) -->
+      <div class="team-roster team-b">
+        <div class="team-badge">
+          <span class="team-score" id="scoreB">0</span>
+          <span class="team-tag">TEAM B</span>
+        </div>
+        <div class="roster-list" id="rosterB">
+          <!-- Populated dynamically: Sudharsan, Sakin, Sriram -->
+        </div>
+      </div>
+    </header>
+
+    <!-- Top Right Quick Actions -->
+    <div id="quickActions">
+      <button id="btnSoundToggle" class="hud-icon-btn" title="Toggle Sound">🔊</button>
+      <button id="btnPause" class="hud-icon-btn" title="Pause Game">⏸</button>
+    </div>
+
+    <!-- Active Player Bottom HUD -->
+    <div id="playerHud">
+      <div class="player-card">
+        <div class="hero-avatar" id="playerAvatar">S</div>
+        <div class="hero-details">
+          <div class="hero-name-row">
+            <span class="hero-name" id="playerHeroName">Suganeesh</span>
+            <span class="hero-role" id="playerHeroRole">Assault Rifle</span>
+          </div>
+          <div class="hp-bar-container">
+            <div class="hp-bar-fill" id="playerHpFill" style="width: 100%;"></div>
+            <span class="hp-text" id="playerHpText">100 / 100</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ammo, Dash & Ability Status -->
+      <div class="weapon-status">
+        <div class="ammo-box">
+          <div class="ammo-label">AMMO</div>
+          <div class="ammo-count" id="ammoDisplay">30 / 30</div>
+          <div class="ammo-bar"><div id="ammoFill" style="width:100%"></div></div>
+        </div>
+        <div class="dash-box">
+          <div class="dash-btn-display" id="dashIndicator">DASH [SPACE]</div>
+        </div>
+        <div class="ability-box">
+          <div class="ability-btn-display" id="abilityIndicator">
+            <span id="abilityIcon">🔥</span>
+            <span id="abilityNameText">BURST</span>
+            <span id="abilityKeyText">[E]</span>
+          </div>
+          <div class="ability-bar"><div id="abilityFill" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kill Feed / Event Notifications -->
+    <div id="killFeed"></div>
+
+    <!-- Desktop Controls Hint (Fades out) -->
+    <div id="desktopHint">
+      <span>WASD: Move</span> • <span>Mouse: Aim & Shoot</span> • <span>SPACE: Dash</span> • <span>E: Special Ability</span> • <span>R: Reload</span> • <span>P: Pause</span>
+    </div>
+
+    <!-- Mobile Virtual Controls Overlay -->
+    <div id="touchControls">
+      <!-- Left Joystick Zone -->
+      <div id="joystickZone">
+        <div id="joystickBase">
+          <div id="joystickStick"></div>
+        </div>
+      </div>
+
+      <!-- Right Action Cluster -->
+      <div id="actionCluster">
+        <button id="btnMobileAbility" class="touch-btn ability-btn" title="Special Ability">
+          <span id="mobileAbilityIcon">🔥</span>
+          <span id="mobileAbilityName">SKILL</span>
+          <span id="mobileAbilityCd" class="ability-cd-overlay">READY</span>
+        </button>
+        <button id="btnMobileDash" class="touch-btn dash-btn">
+          <span>DASH</span>
+        </button>
+        <button id="btnMobileReload" class="touch-btn reload-btn">
+          <span>RELOAD</span>
+        </button>
+        <button id="btnMobileAutoAim" class="touch-btn autoaim-btn">
+          <span id="autoAimText">AIM: AUTO</span>
+        </button>
+        <div id="btnMobileFire" class="touch-fire-btn">
+          <span>FIRE</span>
+          <div class="fire-ripple"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause / Settings Modal Overlay -->
+    <div id="modalOverlay" class="modal-hidden">
+      <div class="game-modal" id="pauseModal">
+        <h2 class="modal-title">MACHAN LEAGUE</h2>
+        <p class="modal-subtitle">TACTICAL 3 VS 3 SHOOTER</p>
+
+        <!-- Current Player Character Switcher -->
+        <div class="modal-section">
+          <div class="section-title">CHOOSE YOUR FIGHTER</div>
+          <div class="character-select-grid" id="charSelectGrid">
+            <!-- Dynamically rendered 6 characters -->
+          </div>
+        </div>
+
+        <!-- Settings Options -->
+        <div class="modal-section settings-grid">
+          <div class="setting-item">
+            <span>Sound Effects:</span>
+            <button id="btnModalSfxToggle" class="pill-btn">ENABLED</button>
+          </div>
+          <div class="setting-item">
+            <span>Touch Controls:</span>
+            <button id="btnModalTouchToggle" class="pill-btn">AUTO</button>
+          </div>
+          <div class="setting-item">
+            <span>Auto-Aim Assist:</span>
+            <button id="btnModalAimToggle" class="pill-btn">ENABLED</button>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btnResume" class="btn-primary">RESUME MATCH</button>
+          <button id="btnRestart" class="btn-secondary">RESTART ROUND</button>
+        </div>
+      </div>
+
+      <!-- Victory / Defeat Modal -->
+      <div class="game-modal modal-hidden" id="gameOverModal">
+        <div class="trophy-banner" id="gameResultBanner">VICTORY</div>
+        <h3 id="resultSubtitle" class="result-team-title">TEAM A DOMINATED THE ARENA!</h3>
+
+        <!-- Match MVP -->
+        <div class="mvp-card" id="mvpCard">
+          <div class="mvp-label">★ MATCH MVP ★</div>
+          <div class="mvp-name" id="mvpName">Suganeesh</div>
+          <div class="mvp-stats" id="mvpStats">3 Kills • 280 Damage</div>
+        </div>
+
+        <!-- 6 Character Stats Table -->
+        <div class="scoreboard-container">
+          <table class="scoreboard-table">
+            <thead>
+              <tr>
+                <th>OPERATOR</th>
+                <th>TEAM</th>
+                <th>KILLS</th>
+                <th>DAMAGE</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="scoreboardBody">
+              <!-- Dynamically populated stats -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btnPlayAgain" class="btn-primary">NEXT ROUND</button>
+          <button id="btnSwitchFighter" class="btn-secondary">SWITCH CHARACTER</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
